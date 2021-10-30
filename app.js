@@ -5,7 +5,9 @@ const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
 
-const addMember = () => {
+const teamArray = [];
+
+const addManager = () => {
     return inquirer.prompt([
         {
             type: 'input',
@@ -43,12 +45,96 @@ const addMember = () => {
             message: "Enter the manager's office number",
         },
     ])
-    .then(managerInput => {
-        const {name, id, email, officeNumber} = managerInput;
-        const manager = new Manager(name, id, email, officeNumber);
+        .then(managerInput => {
+            const { name, id, email, officeNumber } = managerInput;
+            const manager = new Manager(name, id, email, officeNumber);
+            console.log(manager);
 
-        teamArray.push(manager);
-    })
+            teamArray.push(manager);
+        })
 };
 
-addMember();
+const addMembers = () => {
+    return inquirer.prompt([
+        {
+            type: 'list',
+            name: 'role',
+            message: "Choose your team member's role",
+            choices: [
+                'Engineer',
+                'Intern'
+            ]
+        },
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the name of the team member?",
+            validate: nameInput => {
+                if (nameInput) {
+                    return true;
+                } else {
+                    console.log("Please enter your team member's name!");
+                    return false;
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'id',
+            message: "Enter the team membeer's ID",
+            validae: nameInput => {
+                if (isNaN(nameInput)) {
+                    console.log("Please enter the team member's ID")
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'email',
+            message: "Enter the team member`'s email",
+        },
+        {
+            type: 'input',
+            name: 'github',
+            message: "Enter  the team member's github username."
+        },
+        {
+            type: 'input',
+            name: 'school',
+            message: "Please enter the intern's school.",
+            when: (input) => input.role === "Intern"
+        },
+        {
+            type: 'confirm',
+            name: 'confirmAddMember',
+            message: "Do you like to add more team members?",
+            default: false
+        }
+    ])
+        .then(employeeData => {
+            let { name, id, email, role, github, school, confirmAddMember } = employeeData
+            let employee
+            if (role === "Engineer") {
+                employee = new Engineer(name, id, email, github);
+                console.log(employee);
+
+            } else if (role === "Intern") {
+                employee = new Intern(name, id, email, school);
+                console.log(employee);
+            }
+            teamArray.push(employee);
+
+            if (confirmAddMember) {
+                return addEmployees(teamArray);
+            } else {
+                return teamArray;
+            }
+        });
+}
+
+addManager()
+    .then(addMembers)
+    .then(teamArray)

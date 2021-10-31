@@ -4,6 +4,7 @@ const fs = require('fs');
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
+const renderHtml = require("./src/renderHTML");
 
 const teamArray = [];
 
@@ -54,7 +55,7 @@ const addManager = () => {
         })
 };
 
-const addMembers = () => {
+const addEmployees = () => {
     return inquirer.prompt([
         {
             type: 'list',
@@ -99,19 +100,20 @@ const addMembers = () => {
         {
             type: 'input',
             name: 'github',
-            message: "Enter  the team member's github username."
+            message: "Enter  the team member's github username.",
+            when: (input) => input.role === "Engineer"
         },
         {
             type: 'input',
             name: 'school',
-            message: "Please enter the intern's school.",
+            message: "Enter the intern's school.",
             when: (input) => input.role === "Intern"
         },
         {
             type: 'confirm',
             name: 'confirmAddMember',
             message: "Do you like to add more team members?",
-            default: false
+            default: true
         }
     ])
         .then(employeeData => {
@@ -134,7 +136,25 @@ const addMembers = () => {
             }
         });
 }
+const writeFile = data =>{
+    fs.writeFile('./dist/index.html', data, err=> {
+        if(err){
+            console.log(err);
+            return;
+        }else{
+            console.log("Your Team Profile html has successfully created!");
+        }
+    })
+};
 
 addManager()
-    .then(addMembers)
-    .then(teamArray)
+    .then(addEmployees)
+    .then(memberArray => {
+        return renderHtml(memberArray);
+    })
+    .then(pageHTML => {
+        return writeFile(pageHTML);
+    })
+    .catch(err => {
+        console.log(err);
+    });

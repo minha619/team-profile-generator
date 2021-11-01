@@ -27,13 +27,13 @@ const addManager = () => {
             type: 'input',
             name: 'id',
             message: "Enter the manager's ID",
-            validate: nameInput => {
-                if (isNaN(nameInput)) {
-                    console.log("Please enter the manager's ID!");
-                } else {
-                    return true;
-                }
-            }
+            // validate: nameInput => {
+            //     if (isNaN(nameInput)) {
+            //         console.log("Please enter the manager's ID!");
+            //     } else {
+            //         return true;
+            //     }
+            // }
         },
         {
             type: 'input',
@@ -100,7 +100,7 @@ const addEmployees = () => {
         {
             type: 'input',
             name: 'github',
-            message: "Enter  the team member's github username.",
+            message: "Enter the team member's github username.",
             when: (input) => input.role === "Engineer"
         },
         {
@@ -136,16 +136,19 @@ const addEmployees = () => {
             }
         });
 }
-const writeFile = data =>{
-    fs.writeFile('./dist/index.html', data, err=> {
-        if(err){
+const writeFile = data => {
+    fs.writeFile('./dist/index.html', data, err => {
+        if (err) {
             console.log(err);
             return;
-        }else{
+        } else {
             console.log("Your Team Profile html has successfully created!");
         }
     })
 };
+
+// const html = renderHtml([new Manager('Minha', 123, 'minha@eamil', '123-455')]);
+// writeFile(html);
 
 addManager()
     .then(addEmployees)
